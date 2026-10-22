@@ -1,91 +1,179 @@
-# MiniLedger
+# MiniLedger — Money Lending Tracker
 
-A small full-stack app for tracking money lent to friends.
+MiniLedger is a simple React Native application that helps users track money lent to friends. Users can log in using their phone number and a mock OTP, add loan entries, track repayment status, and identify overdue loans from a summary dashboard.
 
-## Stack
-- API: Node.js, TypeScript, Express, PostgreSQL (`pg`), JWT
-- Mobile: Expo React Native + TypeScript
-- OTP: mock OTP printed in the API server log (development only)
+## Features
 
-## Requirements
-- Node.js 20+
-- PostgreSQL 14+
+- **Phone authentication:** Login using a phone number and mock OTP.
+- **Add loan entries:** Record a friend's name, loan amount, and due date.
+- **Track repayments:** Mark loans as repaid.
+- **Dashboard summary:** View total lent, total repaid, and overdue amount.
+- **Overdue highlighting:** Quickly identify loans past their due dates.
+- **PostgreSQL persistence:** Store loan and user data in a relational database.
+- **Clean dashboard UI:** A Midnight Blue color palette with clear loan statuses.
+
+## Tech Stack
+
+### Backend
+- Node.js
+- TypeScript
+- Express.js
+- PostgreSQL
+- JWT authentication
+- Mock OTP verification
+
+### Frontend
+- React Native
+- Expo
+- TypeScript
+- Fetch API for backend communication
+
+## Project Structure
+
+```text
+MiniLedger/
+├── backend/
+│   ├── src/
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── App.tsx
+│   └── package.json
+├── .gitignore
+└── README.md
+```
+
+*The folder and file names above are illustrative. Adjust the tree to match the actual repository.*
+
+## Prerequisites
+
+Install the following before running the project:
+
+- Node.js and npm
+- PostgreSQL
+- Git
 - Expo Go or an Android emulator
+- A code editor such as Visual Studio Code
 
-## 1. Start PostgreSQL
-Create a database:
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/tamann-wq/MiniLedger.git
+cd MiniLedger
+```
+
+### 2. Configure PostgreSQL
+
+Create a PostgreSQL database for MiniLedger using pgAdmin or the PostgreSQL command line.
+
 ```sql
 CREATE DATABASE miniledger;
 ```
-The API creates its table automatically on startup.
 
-## 2. Run the API
+Configure the backend environment variables with your local database connection details. Use the actual variable names expected by your backend.
+
+Example `.env` configuration:
+
+```env
+PORT=YOUR_BACKEND_PORT
+DATABASE_URL=YOUR_POSTGRESQL_CONNECTION_STRING
+JWT_SECRET=YOUR_LOCAL_JWT_SECRET
+```
+
+Do not commit your real `.env` file or credentials to GitHub.
+
+**Database schema:** Follow the schema or migration setup included in the backend project. If the repository does not include schema creation or migrations, document the required setup before running the app.
+
+### 3. Start the backend
+
+Open a terminal:
+
 ```bash
 cd backend
-cp .env.example .env
 npm install
+```
+
+Run the development command configured in `backend/package.json`. For example, if the project defines a `dev` script:
+
+```bash
 npm run dev
 ```
-Set `DATABASE_URL` in `.env`. By default, the API listens on port `4000`.
-For an Android emulator, the app API URL should be `http://10.0.2.2:4000`; for a physical phone, use your computer's LAN IP.
 
-### OTP flow
-1. Call `POST /auth/request-otp` with `{"phone":"+919876543210"}`.
-2. Read the OTP printed in the API terminal.
-3. Call `POST /auth/verify-otp` with the phone and OTP. The response includes a JWT.
-OTP storage is in memory and expires after 5 minutes. This is a demo, not production authentication.
+Check the backend terminal for startup messages and the mock OTP. Use the actual API URL and port configured by your backend.
 
-## 3. Run the mobile app
+### 4. Start the React Native app
+
+Open another terminal:
+
 ```bash
-cd mobile
+cd frontend
 npm install
-```
-Edit `src/config.ts` and set `API_URL`:
-- Android emulator: `http://10.0.2.2:4000`
-- iOS simulator: `http://localhost:4000`
-- Physical device: `http://YOUR_COMPUTER_LAN_IP:4000`
-
-Then run:
-```bash
 npx expo start
 ```
-Scan the QR code with Expo Go, or press `a` for Android.
 
-## API endpoints
-- `POST /auth/request-otp` — request a mock OTP
-- `POST /auth/verify-otp` — verify OTP and return a bearer token
-- `GET /entries` — list current user's loan entries
-- `POST /entries` — create `{ friendName, amount, dueDate }`
-- `PATCH /entries/:id/repay` — mark a loan as repaid
-- `GET /summary` — `{ totalLent, totalRepaid, overdueAmount }`
-- `GET /health` — health check
+Open the app in Expo Go or your configured development emulator.
 
-All entry and summary routes require `Authorization: Bearer <token>`.
+Configure the frontend API base URL to point to the running backend. When using an Android emulator, `localhost` usually refers to the emulator itself; use the appropriate host address for your setup.
 
-## Notes / limitations
-- Amounts are stored as PostgreSQL `NUMERIC`; the API serializes them as numbers for the client.
-- Each phone number gets a user row and can only access its own entries.
-- OTPs are intentionally mocked and logged. Never log real OTPs in production.
-- Receipt uploads are not included in this MVP.
-- Tests: run `npm test` in `backend` for validation and summary tests.
+## How to Use MiniLedger
 
-## Suggested 2–3 minute demo recording
-1. Show the login screen and request an OTP.
-2. Show the API terminal log containing the mock OTP.
-3. Verify OTP and enter the app.
-4. Show summary totals and the entries list.
-5. Add a loan due today / in the past to show overdue highlighting.
-6. Mark an entry as repaid and show the summary update.
-7. Briefly show README and API routes.
+1. Enter your phone number on the login screen.
+2. Obtain the mock OTP from the backend terminal and enter it in the app.
+3. Log in and view the dashboard summary.
+4. Select **Add Loan** and enter the friend's name, amount, and due date.
+5. View the new loan in the entries list.
+6. Check overdue entries, which are highlighted in the UI.
+7. Select **Mark as Repaid** when a loan has been repaid.
+8. Confirm that the loan status and dashboard summary update.
 
-## GitHub submission
-Create an empty repository on GitHub, then from this folder run:
-```bash
-git init
-git add .
-git commit -m "Build MiniLedger MVP"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/miniledger.git
-git push -u origin main
-```
-Replace the URL with your actual repository URL. Record the demo with Loom or your screen recorder and add the share link to this README.
+## API Overview
+
+The backend provides functionality for:
+
+| Functionality | Description |
+|---|---|
+| Phone authentication | Request and verify a mock OTP |
+| Loan entries | Retrieve and add loan entries |
+| Repayment | Mark a loan as repaid |
+| Summary | Retrieve total lent, total repaid, and overdue amount |
+
+Consult the backend route files for the exact endpoint paths, HTTP methods, request bodies, and response formats.
+
+## Testing
+
+Verify the following workflows:
+
+- Login with a phone number and mock OTP.
+- Add a loan with a valid amount and due date.
+- Confirm the loan appears in the list.
+- Verify overdue highlighting for past-due loans.
+- Mark a loan as repaid and verify the status update.
+- Confirm the dashboard summary updates correctly.
+- Verify that loan data persists after restarting or refreshing the app.
+
+Run automated tests using the test scripts defined in the backend and frontend `package.json` files, if configured.
+
+## Security Notes
+
+- Mock OTP authentication is intended for demonstration and development, not production use.
+- Keep environment variables and credentials out of version control.
+- A production release should use a secure authentication and OTP delivery service.
+
+## Future Improvements
+
+- Receipt photo upload for loan records.
+- More comprehensive automated tests.
+- Improved input validation and error handling.
+- Production-grade authentication and deployment.
+
+## Author
+
+**Tamanna Mishra**
+
+GitHub: https://github.com/tamann-wq
+
+---
+
+Built as a practical project to demonstrate React Native development, REST API integration, authentication, and PostgreSQL data persistence.
