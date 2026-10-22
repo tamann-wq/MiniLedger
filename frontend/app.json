@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "MiniLedger",
+    "slug": "miniledger",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#f8fafc"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.example.miniledger"
+    },
+    "ios": {
+      "bundleIdentifier": "com.example.miniledger"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}
